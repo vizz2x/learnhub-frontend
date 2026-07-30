@@ -28,11 +28,11 @@ function App() {
   async function handleSubmit(event) {
     event.preventDefault()
     try {
-      const response = await fetch('http://127.0.0.1:8000/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+    })
       if (!response.ok) {
         console.log('Login failed, status:', response.status)
         return
