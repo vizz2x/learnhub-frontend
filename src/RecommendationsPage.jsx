@@ -59,12 +59,12 @@ function RecommendationsPage({ token, onNavigateToCourse }) {
   }
 
   const courseDetails = [
-    { icon: '🧠', color: 'linear-gradient(135deg, #e8f5e9, #d1fae5)', tag: 'Thinking Skills', desc: 'Build strong language skills through fun word puzzles and reading challenges!' },
-    { icon: '💡', color: 'linear-gradient(135deg, #fef3c7, #fde68a)', tag: 'Critical Thinking', desc: 'Learn to ask great questions and spot patterns in everyday life!' },
-    { icon: '🔢', color: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', tag: 'Problem Solving', desc: 'Tackle fun puzzles that make your brain stronger every day!' },
+    { icon: '📐', color: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', tag: 'Maths & Logic', desc: 'Build strong number skills and learn to solve problems step by step!' },
+    { icon: '📐', color: 'linear-gradient(135deg, #dbeafe, #bfdbfe)', tag: 'Maths & Logic', desc: 'Explore shapes, patterns, and the logic behind the world around you!' },
+    { icon: '🧠', color: 'linear-gradient(135deg, #e8f5e9, #d1fae5)', tag: 'Thinking Skills', desc: 'Learn to ask great questions and spot patterns in everyday life!' },
+    { icon: '🔢', color: 'linear-gradient(135deg, #fef3c7, #fde68a)', tag: 'Problem Solving', desc: 'Tackle fun puzzles that make your brain stronger every day!' },
     { icon: '📖', color: 'linear-gradient(135deg, #ede9fe, #ddd6fe)', tag: 'Reading', desc: 'Explore amazing stories and build your reading superpowers!' },
     { icon: '🎨', color: 'linear-gradient(135deg, #fce7f3, #fbcfe8)', tag: 'Creativity', desc: 'Express yourself and discover the joy of creating something new!' },
-    { icon: '🌍', color: 'linear-gradient(135deg, #d1fae5, #a7f3d0)', tag: 'Global Skills', desc: 'Explore the world and become a confident global citizen!' },
   ]
 
   const topics = [
