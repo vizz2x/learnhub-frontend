@@ -9,6 +9,7 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
   const [justCompleted, setJustCompleted] = useState(false)
   const [newBadges, setNewBadges] = useState([])
   const [showBadgeCelebration, setShowBadgeCelebration] = useState(false)
+  const [showAssignmentReminder, setShowAssignmentReminder] = useState(false)
 
   useEffect(() => {
     fetchLesson()

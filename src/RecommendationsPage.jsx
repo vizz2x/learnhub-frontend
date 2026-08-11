@@ -71,8 +71,10 @@ function RecommendationsPage({ token, onNavigateToCourse }) {
     { icon: '🧠', label: 'Thinking Skills', color: '#e8f5e9', text: '#065f46' },
     { icon: '📚', label: 'Reading', color: '#dbeafe', text: '#1d4ed8' },
     { icon: '🔢', label: 'Maths & Logic', color: '#fef3c7', text: '#92400e' },
-    { icon: '💻', label: 'Technology', color: '#ede9fe', text: '#7c3aed' },
-    { icon: '🎨', label: 'Creativity', color: '#fce7f3', text: '#be185d' },
+    { icon: '✍️', label: 'Creative Writing', color: '#fce7f3', text: '#be185d' },
+    { icon: '🗣️', label: 'English Language', color: '#ede9fe', text: '#7c3aed' },
+    { icon: '💻', label: 'Technology', color: '#f0fdf4', text: '#065f46' },
+    { icon: '🎨', label: 'Creativity', color: '#fff7ed', text: '#c2410c' },
     { icon: '🌍', label: 'World Skills', color: '#d1fae5', text: '#047857' },
   ]
 
@@ -346,7 +348,7 @@ function RecommendationsPage({ token, onNavigateToCourse }) {
           }}>
             <div style={{ fontSize: '3rem', marginBottom: '10px' }}>✨</div>
             <h3 style={{ color: '#4c1d95', margin: '0 0 8px 0', fontSize: '0.95rem' }}>
-              Find Your Perfect Course!
+              Find the course for you
             </h3>
             <p style={{ color: '#7c3aed', fontSize: '0.82rem', margin: '0 0 var(--space-2) 0', lineHeight: 1.4 }}>
               Take a fun quiz and Owly will recommend the best courses just for you!
