@@ -14,6 +14,7 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
   useEffect(() => {
     fetchLesson()
     setJustCompleted(false)
+    setShowAssignmentReminder(false)
   }, [lessonId])
 
   async function fetchLesson() {
@@ -39,6 +40,7 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
       if (!response.ok) { setMarking(false); return }
       const data = await response.json()
       setJustCompleted(true)
+      setShowAssignmentReminder(true)
       setMarking(false)
       if (data.badges_earned && data.badges_earned.length > 0) {
         setNewBadges(data.badges_earned)
@@ -204,6 +206,53 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
                 fontSize: '0.85rem', fontWeight: 700
               }}>
                 ⭐ +10 points earned!
+              </div>
+            )}
+
+            {/* Owly assignment reminder */}
+            {showAssignmentReminder && (
+              <div style={{
+                marginTop: 'var(--space-2)',
+                background: 'white', borderRadius: '16px',
+                padding: 'var(--space-2) var(--space-3)',
+                border: '2px solid var(--gold)',
+                display: 'flex', alignItems: 'center', gap: '12px',
+                maxWidth: '420px', margin: 'var(--space-2) auto 0',
+                textAlign: 'left'
+              }}>
+                <div style={{ fontSize: '2.5rem', flexShrink: 0, animation: 'characterBounce 1s ease-in-out infinite' }}>🦉</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, color: 'var(--ink)', fontSize: '0.95rem', marginBottom: '4px' }}>
+                    Don't forget your assignment!
+                  </div>
+                  <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: '#6b7280', lineHeight: 1.5 }}>
+                    Complete your assignment for this lesson to earn more points! 📝⭐
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => { setShowAssignmentReminder(false); onBack() }}
+                      style={{
+                        background: 'var(--green)', color: 'white', border: 'none',
+                        padding: '8px 16px', borderRadius: '10px',
+                        fontFamily: 'var(--font-body)', fontSize: '0.85rem', fontWeight: 700,
+                        textTransform: 'none', letterSpacing: 'normal', cursor: 'pointer', margin: 0
+                      }}
+                    >
+                      📝 View Assignment
+                    </button>
+                    <button
+                      onClick={() => setShowAssignmentReminder(false)}
+                      style={{
+                        background: 'none', color: '#6b7280', border: '1px solid #e5e7eb',
+                        padding: '8px 16px', borderRadius: '10px',
+                        fontFamily: 'var(--font-body)', fontSize: '0.85rem', fontWeight: 500,
+                        textTransform: 'none', letterSpacing: 'normal', cursor: 'pointer', margin: 0
+                      }}
+                    >
+                      Continue Learning
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
