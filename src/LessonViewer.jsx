@@ -10,12 +10,61 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
   const [newBadges, setNewBadges] = useState([])
   const [showBadgeCelebration, setShowBadgeCelebration] = useState(false)
   const [showAssignmentReminder, setShowAssignmentReminder] = useState(false)
+  const [videoWatched, setVideoWatched] = useState(false)
+  const [watchPercent, setWatchPercent] = useState(0)
 
   useEffect(() => {
     fetchLesson()
     setJustCompleted(false)
     setShowAssignmentReminder(false)
+    setVideoWatched(false)
+    setWatchPercent(0)
   }, [lessonId])
+
+  useEffect(() => {
+    if (!lesson || lesson.content_type !== 'video') return
+    if (lesson.is_completed) { setVideoWatched(true); return }
+
+    // Load YouTube IFrame API
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    const firstTag = document.getElementsByTagName('script')[0]
+    firstTag.parentNode.insertBefore(tag, firstTag)
+
+    let player
+    let interval
+
+    window.onYouTubeIframeAPIReady = () => {
+      player = new window.YT.Player('learnhub-yt-player', {
+        events: {
+          onStateChange: (event) => {
+            // Start polling when playing
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              interval = setInterval(() => {
+                if (!player) return
+                const current = player.getCurrentTime()
+                const duration = player.getDuration()
+                if (duration > 0) {
+                  const pct = (current / duration) * 100
+                  setWatchPercent(pct)
+                  if (pct >= 90) {
+                    setVideoWatched(true)
+                    clearInterval(interval)
+                  }
+                }
+              }, 2000)
+            } else {
+              clearInterval(interval)
+            }
+          }
+        }
+      })
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [lesson])
 
   async function fetchLesson() {
     setLoading(true)
@@ -56,7 +105,7 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
   function getEmbedUrl(youtubeUrl) {
     if (!youtubeUrl) return ''
     const videoId = youtubeUrl.split('v=')[1]?.split('&')[0]
-    return `https://www.youtube.com/embed/${videoId}`
+    return `https://www.youtube.com/embed/${videoId}?enablejsapi=1`
   }
 
   if (loading) {
@@ -143,7 +192,6 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
         </div>
       )}
 
-      {/* Video */}
       {isVideo && lesson.content_data?.video_url && (
         <div style={{ marginBottom: 'var(--space-3)' }}>
           <div style={{
@@ -153,15 +201,38 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
             boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
           }}>
             <iframe
+              id="learnhub-yt-player"
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none', borderRadius: '16px' }}
               src={getEmbedUrl(lesson.content_data.video_url)}
               title={lesson.title}
               allowFullScreen
             />
           </div>
-          <p style={{ fontSize: '0.78rem', color: '#9ca3af', textAlign: 'center', margin: 0 }}>
-            🎬 Watch the full video before marking as complete!
-          </p>
+          {!videoWatched ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              justifyContent: 'center', marginTop: '8px'
+            }}>
+              <div style={{
+                height: '6px', flex: 1, maxWidth: '200px',
+                background: '#f3f4f6', borderRadius: '999px', overflow: 'hidden'
+              }}>
+                <div style={{
+                  height: '100%', borderRadius: '999px',
+                  width: `${watchPercent}%`,
+                  background: watchPercent >= 90 ? 'var(--green)' : 'var(--gold)',
+                  transition: 'width 0.5s ease'
+                }} />
+              </div>
+              <p style={{ fontSize: '0.78rem', color: '#9ca3af', margin: 0 }}>
+                {watchPercent >= 90 ? '✅ Video watched!' : `🎬 ${Math.round(watchPercent)}% watched — keep going!`}
+              </p>
+            </div>
+          ) : (
+            <p style={{ fontSize: '0.78rem', color: 'var(--green)', textAlign: 'center', margin: '8px 0 0', fontWeight: 600 }}>
+              ✅ Video complete! You can now mark this lesson as done.
+            </p>
+          )}
         </div>
       )}
 
@@ -267,19 +338,19 @@ function LessonViewer({ token, lessonId, onBack, hideBackButton = false }) {
             </p>
             <button
               onClick={handleMarkComplete}
-              disabled={marking}
+              disabled={marking || (isVideo && !videoWatched)}
               style={{
-                background: marking ? '#e5e7eb' : 'var(--green)',
-                color: marking ? '#9ca3af' : 'white',
+                background: marking || (isVideo && !videoWatched) ? '#e5e7eb' : 'var(--green)',
+                color: marking || (isVideo && !videoWatched) ? '#9ca3af' : 'white',
                 border: 'none', padding: '14px 32px', borderRadius: '14px',
                 fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 700,
                 textTransform: 'none', letterSpacing: 'normal',
-                cursor: marking ? 'not-allowed' : 'pointer',
+                cursor: marking || (isVideo && !videoWatched) ? 'not-allowed' : 'pointer',
                 margin: 0, transition: 'all 0.2s',
                 display: 'inline-flex', alignItems: 'center', gap: '8px'
               }}
             >
-              {marking ? '🦉 Saving...' : '✅ Mark as Complete! +10 pts'}
+              {marking ? '🦉 Saving...' : (isVideo && !videoWatched) ? '🎬 Watch the video first!' : '✅ Mark as Complete! +10 pts'}
             </button>
           </div>
         )}
