@@ -6,6 +6,7 @@ function CourseBrowse({ token }) {
   const [loading, setLoading] = useState(true)
   const [enrollingId, setEnrollingId] = useState(null)
   const [justEnrolled, setJustEnrolled] = useState(null)
+  const [enrollError, setEnrollError] = useState(null)
 
   useEffect(() => {
     fetchAvailableCourses()
@@ -27,11 +28,17 @@ function CourseBrowse({ token }) {
 
   async function handleEnroll(courseId) {
     setEnrollingId(courseId)
+    setEnrollError(null)
     try {
       const response = await apiFetch(`/courses/${courseId}/enroll?token=${token}`, {
         method: 'POST'
       })
-      if (!response.ok) { setEnrollingId(null); return }
+      if (!response.ok) {
+        const err = await response.json()
+        setEnrollError(err.detail || 'Cannot enroll right now.')
+        setEnrollingId(null)
+        return
+      }
       setJustEnrolled(courseId)
       setEnrollingId(null)
       setTimeout(() => {
@@ -39,6 +46,7 @@ function CourseBrowse({ token }) {
         fetchAvailableCourses()
       }, 1500)
     } catch (error) {
+      setEnrollError('Network error. Please try again.')
       setEnrollingId(null)
     }
   }
@@ -75,6 +83,30 @@ function CourseBrowse({ token }) {
 
   return (
     <div>
+      {/* Enrollment error banner */}
+      {enrollError && (
+        <div style={{
+          background: '#fef3c7', border: '2px solid var(--gold)',
+          borderRadius: '16px', padding: 'var(--space-2) var(--space-3)',
+          marginBottom: 'var(--space-2)',
+          display: 'flex', alignItems: 'center', gap: '12px'
+        }}>
+          <div style={{ fontSize: '2rem', flexShrink: 0 }}>🦉</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, color: '#92400e', fontSize: '0.95rem', marginBottom: '2px' }}>
+              Finish your current course first!
+            </div>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#b45309', lineHeight: 1.5 }}>
+              {enrollError} Complete it to unlock new courses! 💪
+            </p>
+          </div>
+          <button
+            onClick={() => setEnrollError(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', color: '#92400e', padding: 0, margin: 0, flexShrink: 0 }}
+          >✕</button>
+        </div>
+      )}
+
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -151,5 +183,3 @@ function CourseBrowse({ token }) {
     </div>
   )
 }
-
-export default CourseBrowse
