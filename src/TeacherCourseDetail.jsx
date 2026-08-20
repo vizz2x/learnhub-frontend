@@ -71,7 +71,7 @@ function TeacherCourseDetail({ token, courseId, onBack }) {
     )
   }
 
-    if (quizLesson) {
+  if (quizLesson) {
     return (
       <QuizBuilder
         token={token}
