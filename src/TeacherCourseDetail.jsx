@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import TeacherLessonViewer from './TeacherLessonViewer'
 import TeacherAssignments from './TeacherAssignments'
+import QuizBuilder from './QuizBuilder'
 import apiFetch from './api'
 
 function TeacherCourseDetail({ token, courseId, onBack }) {
@@ -8,6 +9,7 @@ function TeacherCourseDetail({ token, courseId, onBack }) {
   const [loading, setLoading] = useState(true)
   const [activeLessonId, setActiveLessonId] = useState(null)
   const [showAssignments, setShowAssignments] = useState(false)
+  const [quizLesson, setQuizLesson] = useState(null)
 
   useEffect(() => {
     fetchCourse()
@@ -69,6 +71,16 @@ function TeacherCourseDetail({ token, courseId, onBack }) {
     )
   }
 
+    if (quizLesson) {
+    return (
+      <QuizBuilder
+        token={token}
+        lesson={quizLesson}
+        courseId={courseId}
+        onBack={() => setQuizLesson(null)}
+      />
+    )
+  }
 
 
   if (loading) return <p style={{ padding: 'var(--space-3)' }}>Loading...</p>
@@ -115,7 +127,20 @@ function TeacherCourseDetail({ token, courseId, onBack }) {
                 <div className="course-row__info">
                   <div className="course-row__title">{lesson.title}</div>
                 </div>
-                <div style={{ color: '#9ca3af', fontSize: '0.85rem' }}>→</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setQuizLesson(lesson) }}
+                    style={{
+                      background: '#e8f5e9', color: 'var(--green)', border: '1px solid #bbf7d0',
+                      padding: '4px 10px', borderRadius: '6px',
+                      fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontWeight: 600,
+                      textTransform: 'none', letterSpacing: 'normal', cursor: 'pointer', margin: 0
+                    }}
+                  >
+                    🎯 Quiz
+                  </button>
+                  <div style={{ color: '#9ca3af', fontSize: '0.85rem' }}>→</div>
+                </div>                <div style={{ color: '#9ca3af', fontSize: '0.85rem' }}>→</div>
               </div>
             ))}
           </div>
